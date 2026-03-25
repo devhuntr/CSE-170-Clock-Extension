@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<!---Warning Popup Html-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warning Popup</title>
+    <style>
+        .backdrop {
+            font-family: 'Montserrat', sans-serif;
+            background-color: rgba(26, 27, 29, 0.3);
+            color: #A39BFF;
+            backdrop-filter: blur(14.5px);
+            position:fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            
+        }
+
+        .warning {
+            position: relative;
+            padding-top: 3.5em;
+        }
+
+        .close-btn {
+            position: absolute;
+            width: 3em;
+            height: 3em;
+            top: 0.6em;
+            right: 0.8em;
+            
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            color: #AFC6FF;
+            cursor: pointer;
+            text-shadow: 0 0 0.4em #4F8BFF;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            
+        }
+
+        #big {
+            font-size: 3.5em;
+            margin-bottom: 0px;
+            text-align: center;
+            color: #AFC6FF;
+            text-shadow:
+                0 0 0.2em #6FA3FF,
+                0 0 0.5em #4F8BFF;
+        }
+
+        #medium {
+            font-size: 1.5em;
+            margin-top: 0.1em;
+            text-align: center;
+            color: #9EB8FF;
+            text-shadow:
+                0 0 0.15em #6FA3FF,
+                0 0 0.3em #4F8BFF;
+                }
+
+        .decision{
+            margin-top:2em ;
+            display: grid;
+            align-self: center;
+            grid-template-columns: 2fr 1fr 1fr 2fr;
+
+        }   
+        
+        button {
+            padding: 0.7em 1.6em;
+            margin: 0.5em;
+            font-size: 1.1em;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            background: #4F8BFF;
+            color: white;
+            box-shadow: 0 0 0.5em #4F8BFF;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            background: #6FA3FF;
+            box-shadow: 0 0 0.8em #6FA3FF;
+        }
+
+        #go-back {
+            grid-column: 2;
+        }
+        #continue {
+            grid-column: 3;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class = "backdrop">
+    <header class = "warning" role="alert">
+        <button class="close-btn" id="close">x</button>
+        <h1 id="big">Warning </h1>
+        <h3 id="medium">You have attempted to access <span id="blocked-site">this site</span>, which you have restricted for the duration of your study</h3>
+    </header>
+
+    <div class="decision">
+        <button id="go-back">Go Back</button>
+        <button id="continue">Continue Anyway</button>
+    </div>
+
+
+
+</div>
+</body>
+</html>

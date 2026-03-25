@@ -2,6 +2,10 @@
 
 Because many people will be working on this, we have set up a system so that there are little to no merging issues.
 
+## Guide on how to develop
+
+this is explained [here](./guide.md).
+
 ## How to contribute
 
 1. Make sure you have a **fork** of this repository like so:<br>

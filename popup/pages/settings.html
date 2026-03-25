@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="./../settings.css" />
+</head>
+<body>
+
+  <div id="settings" class="tab-content">
+
+    <select id="listType" class="black/white list">
+      <option value="blacklist">Blacklist</option>
+      <option value="whitelist">Whitelist</option>
+    </select>
+
+    <button type="submit" class="add-btn">Add</button>
+
+    <form class="url-form">
+      <label for="urlInput">URL</label>
+      <input id="urlInput" type="text" placeholder="https://example.com" />
+    </form>
+
+    <ul class="list-content"></ul>
+
+    <div class="theme-toggle">
+      <button type="button" class="light">Light</button>
+      <button type="button" class="auto">Auto</button>
+      <button type="button" class="dark">Dark</button>
+    </div>
+
+  </div>
+
+  <script src="./../settings.js"></script>
+</body>
+</html>

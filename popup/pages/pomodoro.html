@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="../popup.css">
+</head>
+<body class="shell">
+
+  <div class="card">
+    <div class="header">
+      <p class="eyebrow" id="phaseDisplay">WORK PHASE</p>
+      <h1>Pomodoro</h1>
+    </div>
+
+    <div class="timerWrap">
+      <div class="time" id="timeDisplay">00:00:00</div>
+    </div>
+
+    <div class="configWrap">
+      <div class="field">
+        <span>Study Time</span>
+        <div class="customRow">
+          <input type="number" id="workHours" min="0" value="1" placeholder="Hrs">
+          <input type="number" id="workMins" min="0" max="59" value="0" placeholder="Mins">
+        </div>
+      </div>
+      <br>
+      <div class="field">
+        <span>Break Time</span>
+        <div class="customRow">
+          <input type="number" id="breakHours" min="0" value="0" placeholder="Hrs">
+          <input type="number" id="breakMins" min="0" max="59" value="20" placeholder="Mins">
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="startBtn">Start</button>
+      <button class="btn" id="stopBtn">Pause</button>
+      <button class="btn danger" id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    // --- UI Logic ---
+    const timeDisplay = document.getElementById('timeDisplay');
+    const phaseDisplay = document.getElementById('phaseDisplay');
+    const workHours = document.getElementById('workHours');
+    const workMins = document.getElementById('workMins');
+    const breakHours = document.getElementById('breakHours');
+    const breakMins = document.getElementById('breakMins');
+    
+    let localDisplayInterval;
+
+    // Helper to format seconds into HH:MM:SS
+    function formatTime(totalSeconds) {
+      const h = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+      const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+      const s = (totalSeconds % 60).toString().padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+
+    // Fetches the real time from the background worker and updates the HTML
+    function syncDisplay() {
+      chrome.runtime.sendMessage({ action: 'GET_STATE' }, (state) => {
+        if (state) {
+          timeDisplay.innerText = formatTime(state.timeRemaining);
+          phaseDisplay.innerText = state.phase + " PHASE";
+          
+          if (state.isRunning && !localDisplayInterval) {
+            // Keep the UI ticking locally every second while the popup is open
+            localDisplayInterval = setInterval(syncDisplay, 1000);
+          } else if (!state.isRunning) {
+            clearInterval(localDisplayInterval);
+            localDisplayInterval = null;
+          }
+        }
+      });
+    }
+
+    // --- Button Listeners ---
+    document.getElementById('startBtn').addEventListener('click', () => {
+      // Calculate total seconds from inputs
+      const wTime = (parseInt(workHours.value) * 3600) + (parseInt(workMins.value) * 60);
+      const bTime = (parseInt(breakHours.value) * 3600) + (parseInt(breakMins.value) * 60);
+
+      chrome.runtime.sendMessage({ 
+        action: 'START', 
+        workTime: wTime, 
+        breakTime: bTime 
+      }, () => {
+        syncDisplay();
+      });
+    });
+
+    document.getElementById('stopBtn').addEventListener('click', () => {
+      chrome.runtime.sendMessage({ action: 'STOP' }, () => {
+        syncDisplay();
+      });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      chrome.runtime.sendMessage({ action: 'RESET' }, () => {
+        timeDisplay.innerText = "00:00:00";
+        phaseDisplay.innerText = "WORK PHASE";
+        syncDisplay();
+      });
+    });
+
+    // Run once when the popup is opened to catch up to the background timer
+    syncDisplay();
+  </script>
+</body>
+</html>

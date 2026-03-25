@@ -1,0 +1,162 @@
+
+#listType {
+  display: block;
+  margin: 16px auto 8px;
+}
+
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  margin: 0 auto 12px;
+}
+
+.url-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 auto 16px;
+  text-align: left;
+}
+
+.url-form label {
+  font-size: 12px;
+}
+
+.url-form input {
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.theme-toggle {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.theme-toggle button {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+/* Theme: dark */
+body.theme-dark {
+  background-color: #232528;
+  color: #ffffff;
+}
+
+body.theme-dark .tab-container {
+  border-bottom: 1px solid #2f3238;
+  background-color: #2f3238;
+}
+
+body.theme-dark .tab-btn {
+  color: #A39BFF;
+}
+
+body.theme-dark .tab-btn.active {
+  color: #ffffff;
+  border-bottom: 3px solid #8075FF;
+}
+
+body.theme-dark .tab-content {
+  background-color: #2f3238;
+}
+
+body.theme-dark #listType {
+  background-color: #232528;
+  color: #ffffff;
+  border: 1px solid #8075FF;
+  border-radius: 4px;
+}
+
+body.theme-dark button[type="submit"] {
+  background-color: #8075FF;
+  color: #ffffff;
+  border: 1px solid #5F55CC;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+body.theme-dark .url-form input {
+  background-color: #232528;
+  color: #ffffff;
+  border: 1px solid #A39BFF;
+  border-radius: 4px;
+}
+
+body.theme-dark .theme-toggle button {
+  background: #2f3238;
+  border: 1px solid #8075FF;
+  color: #A39BFF;
+}
+
+body.theme-dark .theme-toggle button.selected {
+  background: #8075FF;
+  border-color: #5F55CC;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+/* Theme: light */
+body.theme-light {
+  background-color: #f5f5f5;
+  color: #232528;
+}
+
+body.theme-light .tab-container {
+  border-bottom: 1px solid #ddd;
+  background-color: #ffffff;
+}
+
+body.theme-light .tab-btn {
+  color: #5F55CC;
+}
+
+body.theme-light .tab-btn.active {
+  color: #232528;
+  border-bottom: 3px solid #8075FF;
+}
+
+body.theme-light .tab-content {
+  background-color: #ffffff;
+}
+
+body.theme-light #listType {
+  background-color: #ffffff;
+  color: #232528;
+  border: 1px solid #8075FF;
+  border-radius: 4px;
+}
+
+body.theme-light button[type="submit"] {
+  background-color: #8075FF;
+  color: #ffffff;
+  border: 1px solid #5F55CC;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+body.theme-light .url-form input {
+  background-color: #ffffff;
+  color: #232528;
+  border: 1px solid #A39BFF;
+  border-radius: 4px;
+}
+
+body.theme-light .theme-toggle button {
+  background: #ffffff;
+  border: 1px solid #8075FF;
+  color: #5F55CC;
+}
+
+body.theme-light .theme-toggle button.selected {
+  background: #8075FF;
+  border-color: #5F55CC;
+  color: #ffffff;
+  font-weight: bold;
+}
