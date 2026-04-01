@@ -7,7 +7,7 @@ class UIManager {
     this.inactivityBanner = null;
   }
 
-  showBlockedSiteWarning(onDismiss) {
+  showBlockedSiteWarning() {
     if (this.blockedOverlay) return; // already visible
 
     this.blockedOverlay = document.createElement('div');
@@ -45,7 +45,7 @@ class UIManager {
     }
   }
 
-  showInactivityBanner(onDismiss) {
+  showInactivityBanner(onDismiss, timeoutMinutes) {
     if (this.inactivityBanner) return; // already visible
 
     this.inactivityBanner = document.createElement('div');
@@ -71,7 +71,8 @@ class UIManager {
     });
 
     const msg = document.createElement('span');
-    msg.textContent = "FocusGuard: You've been inactive for 10 minutes — still working?";
+    const minutes = timeoutMinutes || 10;
+    msg.textContent = `FocusGuard: You've been inactive for ${minutes} minute${minutes === 1 ? '' : 's'} — still working?`;
 
     const btn = document.createElement('button');
     btn.textContent = "I'm here";

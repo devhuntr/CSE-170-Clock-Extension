@@ -14,6 +14,7 @@ let activityTracker = null;
 let inactivityMonitor = null;
 let websiteMonitor = null;
 let uiManager = null;
+let currentInactivityTimeout = 10; // minutes, kept in sync with storage
 
 // ---------------------------------------------------------------------------
 // Initialization
@@ -38,7 +39,7 @@ function initializeModules() {
 // ---------------------------------------------------------------------------
 
 function onInactivityTriggered() {
-  uiManager.showInactivityBanner(() => onDismissInactivityBanner());
+  uiManager.showInactivityBanner(() => onDismissInactivityBanner(), currentInactivityTimeout);
 }
 
 function onDismissInactivityBanner() {
@@ -61,6 +62,7 @@ function onUserActivity() {
 // ---------------------------------------------------------------------------
 
 function startMonitoring(allowedSites, inactivityEnabled, inactivityTimeout) {
+  currentInactivityTimeout = inactivityTimeout;
   if (!websiteMonitor.isSiteAllowed(allowedSites)) {
     uiManager.showBlockedSiteWarning();
   }
@@ -117,7 +119,8 @@ chrome.storage.onChanged.addListener((changes, area) => {
   // Inactivity settings changed while session is running
   if ((changes.inactivityEnabled !== undefined || changes.inactivityTimeout !== undefined) && isSessionActive) {
     chrome.storage.sync.get(['inactivityEnabled', 'inactivityTimeout'], (data) => {
-      inactivityMonitor.configure(data.inactivityEnabled !== false, data.inactivityTimeout || 10);
+      currentInactivityTimeout = data.inactivityTimeout || 10;
+      inactivityMonitor.configure(data.inactivityEnabled !== false, currentInactivityTimeout);
       inactivityMonitor.reset();
     });
   }

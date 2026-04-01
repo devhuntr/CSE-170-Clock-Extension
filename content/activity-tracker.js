@@ -7,6 +7,7 @@ class ActivityTracker {
   constructor(onActivityCallback) {
     this.onActivityCallback = onActivityCallback;
     this.isTracking = false;
+    this._handler = () => this.onActivityCallback();
   }
 
   start() {
@@ -14,7 +15,7 @@ class ActivityTracker {
     this.isTracking = true;
 
     ACTIVITY_EVENTS.forEach(event => {
-      document.addEventListener(event, () => this.onActivityCallback(), { passive: true });
+      document.addEventListener(event, this._handler, { passive: true });
     });
   }
 
@@ -23,7 +24,7 @@ class ActivityTracker {
     this.isTracking = false;
 
     ACTIVITY_EVENTS.forEach(event => {
-      document.removeEventListener(event, () => this.onActivityCallback());
+      document.removeEventListener(event, this._handler);
     });
   }
 }
