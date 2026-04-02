@@ -7,17 +7,35 @@
 
   <div id="settings" class="tab-content">
 
-    <select id="listType" class="black/white list">
-      <option value="blacklist">Blacklist</option>
-      <option value="whitelist">Whitelist</option>
-    </select>
+    <!-- Focus Session Toggle -->
+    <div class="session-section">
+      <button type="button" id="sessionBtn" class="session-btn">Start Focus Session</button>
+    </div>
 
-    <button type="submit" class="add-btn">Add</button>
+    <!-- Inactivity Settings -->
+    <div class="inactivity-section">
+      <label class="toggle-label">
+        <input type="checkbox" id="inactivityToggle"> Inactivity alerts
+      </label>
+      <div class="inactivity-timeout-row">
+        <label for="inactivityTimeout">Alert after</label>
+        <input type="number" id="inactivityTimeout" min="1" max="120" value="10">
+        <span>min</span>
+      </div>
+    </div>
+
+    <!-- Allowed Sites -->
+    <select id="listType" class="list-type-select">
+      <option value="whitelist">Whitelist</option>
+      <option value="blacklist">Blacklist</option>
+    </select>
 
     <form class="url-form">
       <label for="urlInput">URL</label>
       <input id="urlInput" type="text" placeholder="https://example.com" />
     </form>
+
+    <button type="button" class="add-btn">Add</button>
 
     <ul class="list-content"></ul>
 

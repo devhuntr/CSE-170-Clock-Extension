@@ -1,13 +1,19 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const tabs = document.querySelectorAll('.tab-btn');
-  const contents = document.querySelectorAll('.tab-content');
   const themeButtons = document.querySelectorAll('.theme-toggle button');
   const addButton = document.querySelector('.add-btn');
   const urlInput = document.getElementById('urlInput');
   const listContent = document.querySelector('.list-content');
+  const sessionBtn = document.getElementById('sessionBtn');
+  const inactivityToggle = document.getElementById('inactivityToggle');
+  const inactivityTimeoutInput = document.getElementById('inactivityTimeout');
   const body = document.body;
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
   let autoMode = true;
+  let allowedSites = [];
+
+  // ---------------------------------------------------------------------------
+  // Theme
+  // ---------------------------------------------------------------------------
 
   function applySystemTheme() {
     if (!autoMode) return;
@@ -22,28 +28,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function setSelectedTheme(name) {
     themeButtons.forEach(b => {
-      const isMatch = b.classList.contains(name);
-      if (isMatch) {
-        b.classList.add('selected');
-      } else {
-        b.classList.remove('selected');
-      }
+      b.classList.toggle('selected', b.classList.contains(name));
     });
   }
-
-  tabs.forEach(button => {
-    button.addEventListener('click', () => {
-      const targetId = button.getAttribute('data-target');
-
-      // 1. Remove active class from all buttons and contents
-      tabs.forEach(btn => btn.classList.remove('active'));
-      contents.forEach(content => content.classList.remove('active'));
-
-      // 2. Add active class to the clicked button and its target div
-      button.classList.add('active');
-      document.getElementById(targetId).classList.add('active');
-    });
-  });
 
   themeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -65,34 +52,109 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // React to system theme changes while in auto mode
   prefersDark.addEventListener('change', applySystemTheme);
-
-  // Initial theme: auto (system default)
   setSelectedTheme('auto');
   applySystemTheme();
 
+  // ---------------------------------------------------------------------------
+  // Session toggle
+  // ---------------------------------------------------------------------------
+
+  function updateSessionBtn(isActive) {
+    sessionBtn.textContent = isActive ? 'Stop Focus Session' : 'Start Focus Session';
+    sessionBtn.classList.toggle('session-active', isActive);
+  }
+
+  chrome.storage.sync.get(['isSessionActive'], (data) => {
+    updateSessionBtn(!!data.isSessionActive);
+  });
+
+  sessionBtn.addEventListener('click', () => {
+    chrome.storage.sync.get(['isSessionActive'], (data) => {
+      const newValue = !data.isSessionActive;
+      chrome.runtime.sendMessage({ action: 'SET_SESSION', isActive: newValue }, () => {
+        updateSessionBtn(newValue);
+      });
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Inactivity settings
+  // ---------------------------------------------------------------------------
+
+  chrome.storage.sync.get(['inactivityEnabled', 'inactivityTimeout'], (data) => {
+    inactivityToggle.checked = data.inactivityEnabled !== false;
+    inactivityTimeoutInput.value = data.inactivityTimeout || 10;
+  });
+
+  inactivityToggle.addEventListener('change', () => {
+    chrome.storage.sync.set({ inactivityEnabled: inactivityToggle.checked });
+  });
+
+  inactivityTimeoutInput.addEventListener('change', () => {
+    const value = parseInt(inactivityTimeoutInput.value);
+    if (value > 0) chrome.storage.sync.set({ inactivityTimeout: value });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Allowed sites
+  // ---------------------------------------------------------------------------
+
+  function loadAllowedSites() {
+    chrome.storage.sync.get(['allowedSites'], (data) => {
+      allowedSites = data.allowedSites || [];
+      renderAllowedSitesList();
+    });
+  }
+
+  function renderAllowedSitesList() {
+    listContent.innerHTML = '';
+    allowedSites.forEach(site => {
+      const listItem = document.createElement('li');
+      const urlText = document.createElement('span');
+      urlText.textContent = site;
+
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.textContent = 'x';
+      deleteButton.setAttribute('aria-label', `Delete ${site}`);
+      deleteButton.addEventListener('click', () => {
+        removeUrlFromList(site);
+      });
+
+      listItem.appendChild(urlText);
+      listItem.appendChild(deleteButton);
+      listContent.appendChild(listItem);
+    });
+  }
+
   function addUrlToList() {
     const urlValue = urlInput.value.trim();
-
     if (!urlValue) return;
 
-    const listItem = document.createElement('li');
-    const urlText = document.createElement('span');
-    urlText.textContent = urlValue;
+    let hostname = urlValue;
+    try {
+      const url = new URL(urlValue.startsWith('http') ? urlValue : `https://${urlValue}`);
+      hostname = url.hostname;
+    } catch (e) {
+      hostname = urlValue;
+    }
 
-    const deleteButton = document.createElement('button');
-    deleteButton.type = 'button';
-    deleteButton.textContent = 'x';
-    deleteButton.setAttribute('aria-label', `Delete ${urlValue}`);
-    deleteButton.addEventListener('click', () => {
-      listItem.remove();
-    });
+    if (allowedSites.includes(hostname)) {
+      urlInput.value = '';
+      return;
+    }
 
-    listItem.appendChild(urlText);
-    listItem.appendChild(deleteButton);
-    listContent.appendChild(listItem);
+    allowedSites.push(hostname);
+    chrome.storage.sync.set({ allowedSites });
+    renderAllowedSitesList();
     urlInput.value = '';
+  }
+
+  function removeUrlFromList(site) {
+    allowedSites = allowedSites.filter(s => s !== site);
+    chrome.storage.sync.set({ allowedSites });
+    renderAllowedSitesList();
   }
 
   addButton.addEventListener('click', addUrlToList);
@@ -103,4 +165,6 @@ document.addEventListener('DOMContentLoaded', function () {
       addUrlToList();
     }
   });
+
+  loadAllowedSites();
 });
